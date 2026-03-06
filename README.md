@@ -1,97 +1,177 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Offline GPS Navigation App
 
-# Getting Started
+A React Native application for offline GPS navigation that works on both land and sea using only satellite GNSS positioning. The app works without internet connection and without a SIM card.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## Features
 
-## Step 1: Start Metro
+- **Offline Map Support**: Uses MapLibre for map rendering with offline tile support
+- **GPS Tracking**: High-accuracy GPS tracking with configurable distance filter and update intervals
+- **Track Recording**: Records GPS tracks and saves them locally
+- **Waypoint Management**: Save, view, and delete waypoints
+- **Compass Support**: Heading and direction display
+- **SQLite Database**: Local storage for waypoints and tracks
+- **Permissions Handling**: Proper location and storage permissions
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## Tech Stack
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+- React Native CLI
+- TypeScript
+- @maplibre/maplibre-react-native
+- react-native-geolocation-service
+- react-native-permissions
+- react-native-sensors
+- react-native-fs
+- react-native-sqlite-storage
+- @react-navigation/native
 
-```sh
-# Using npm
-npm start
+## Project Structure
 
-# OR using Yarn
-yarn start
+```
+OfflineGPSNavigation/
+├── src/
+│   ├── components/
+│   │   └── GPSMap.tsx
+│   ├── screens/
+│   │   ├── MapScreen.tsx
+│   │   ├── TrackingScreen.tsx
+│   │   ├── WaypointsScreen.tsx
+│   │   ├── MapDownloadScreen.tsx
+│   │   └── SettingsScreen.tsx
+│   ├── services/
+│   │   └── GPSService.ts
+│   ├── database/
+│   │   └── DatabaseService.ts
+│   ├── navigation/
+│   │   └── AppNavigator.tsx
+│   ├── hooks/
+│   ├── store/
+│   ├── utils/
+│   └── App.tsx
+├── package.json
+├── tsconfig.json
+└── README.md
 ```
 
-## Step 2: Build and run your app
+## Installation
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+1. **Clone or navigate to the project directory:**
+   ```bash
+   cd OfflineGPSNavigation
+   ```
 
-### Android
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-```sh
-# Using npm
-npm run android
+3. **Install iOS dependencies (macOS only):**
+   ```bash
+   cd ios && pod install && cd ..
+   ```
 
-# OR using Yarn
-yarn android
-```
+4. **For Android, ensure you have the Android SDK set up.**
+
+## Running the App
 
 ### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
+```bash
+npx react-native run-ios
 ```
 
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
+### Android
+```bash
+npx react-native run-android
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+## Permissions
 
-```sh
-# Using npm
-npm run ios
+The app requires the following permissions:
 
-# OR using Yarn
-yarn ios
+### Android (`android/app/src/main/AndroidManifest.xml`):
+```xml
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+### iOS (`ios/OfflineGPSNavigation/Info.plist`):
+```xml
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>This app needs access to your location for GPS navigation.</string>
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+<string>This app needs access to your location for GPS navigation.</string>
+```
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+## Configuration
 
-## Step 3: Modify your app
+### GPS Settings
+- **High Accuracy**: Uses GPS satellites for maximum precision
+- **Distance Filter**: Minimum distance (in meters) before a position update is triggered (default: 5m)
+- **Update Interval**: Time between position updates in milliseconds (default: 2000ms)
 
-Now that you have successfully run the app, let's make changes!
+### Offline Maps
+- Map tiles can be downloaded for offline use
+- Supports local tile folders in `/storage/maps/{z}/{x}/{y}.png` format
+- MBTiles support is planned
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+## Usage
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+1. **Map Screen**: View your current position on the map, see GPS info panel
+2. **Tracking**: Start/stop track recording, view recorded tracks
+3. **Waypoints**: Save current location as waypoint, manage saved waypoints
+4. **Offline Maps**: Download maps for offline use
+5. **Settings**: Configure GPS accuracy, map style, and app preferences
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+## Database Schema
 
-## Congratulations! :tada:
+### Waypoints Table
+- `id` (INTEGER PRIMARY KEY)
+- `name` (TEXT)
+- `latitude` (REAL)
+- `longitude` (REAL)
+- `altitude` (REAL)
+- `description` (TEXT)
+- `created_at` (TEXT)
 
-You've successfully run and modified your React Native App. :partying_face:
+### Tracks Table
+- `id` (INTEGER PRIMARY KEY)
+- `name` (TEXT)
+- `created_at` (TEXT)
+- `description` (TEXT)
 
-### Now what?
+### Track Points Table
+- `id` (INTEGER PRIMARY KEY)
+- `track_id` (INTEGER)
+- `latitude` (REAL)
+- `longitude` (REAL)
+- `altitude` (REAL)
+- `speed` (REAL)
+- `heading` (REAL)
+- `timestamp` (TEXT)
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+## Notes
 
-# Troubleshooting
+- The app is designed to work completely offline after initial setup
+- GPS accuracy depends on device hardware and satellite visibility
+- For sea navigation, ensure the device has an unobstructed view of the sky
+- Track recording can consume significant battery; use judiciously
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+## Troubleshooting
 
-# Learn More
+### TypeScript Errors
+If you encounter TypeScript module resolution errors, ensure `tsconfig.json` has proper path mappings and `skipLibCheck` is enabled.
 
-To learn more about React Native, take a look at the following resources:
+### Map Not Showing
+- Check internet connection for initial map style loading
+- Verify MapLibre is properly linked: `npx react-native link @maplibre/maplibre-react-native`
+- For iOS, run `pod install` in the `ios` directory
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+### GPS Not Working
+- Ensure location permissions are granted
+- On Android, check that "High Accuracy" mode is enabled in device settings
+- On iOS, verify location services are enabled
+
+## License
+
+MIT
